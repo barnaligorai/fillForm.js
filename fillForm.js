@@ -11,15 +11,15 @@ const writeToFile = (data) => {
 };
 
 const validateName = (text) => {
-  return text.length > 4 &&
+  return text.trim().length > 4 &&
     text.split('').every(char => /[ a-zA-Z]+/.test(char.toLowerCase()));
 };
+
+const validateAddress = (text) => text.length > 0;
 
 const validatePhNo = (text) => /^\d{10}$/.test(text);
 
 const identity = (text) => text;
-
-const parseDob = (text) => text.split('-');
 
 const parseHobbies = (text) => text.split(',');
 
@@ -48,14 +48,16 @@ const validateHobbies = (text) => {
 const parseContent = (content, form, fileData, callBack) => {
   if (form.validate(content)) {
     const parsedContent = form.parseContent(content);
-    fileData[form.currentQuery().name] = parsedContent;
+    form.updateContent(parsedContent);
     form.nextQuery();
   }
 
-  if (form.isFormFilled(fileData)) {
-    callBack(fileData);
+  if (form.isFormFilled()) {
+    form.formatContent();
+    callBack(form.content);
     process.exit(1);
   }
+
   form.showPrompt();
 };
 
@@ -73,11 +75,13 @@ const readFromStdin = (form, callBack) => {
 
 const main = () => {
   const nameField = new Query('name', validateName, identity);
-  const dob = new Query('dob', validateDob, parseDob);
+  const dob = new Query('dob', validateDob, identity);
   const hobbies = new Query('hobbies', validateHobbies, parseHobbies);
   const phNo = new Query('ph_no', validatePhNo, identity);
+  const address1 = new Query('address line 1', validateAddress, identity);
+  const address2 = new Query('address line 2', validateAddress, identity);
 
-  const form = new Form(nameField, dob, hobbies, phNo);
+  const form = new Form(nameField, dob, hobbies, phNo, address1, address2);
   readFromStdin(form, writeToFile);
 };
 
