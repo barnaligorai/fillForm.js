@@ -2,7 +2,7 @@ class Form {
   constructor(...query) {
     this.queries = query;
     this.index = 0;
-    this.content = {};
+    this.content = [];
   }
 
   currentQuery() {
@@ -30,16 +30,13 @@ class Form {
   }
 
   updateContent(text) {
-    this.content[this.currentQuery().name] = text;
+    this.content.push({ [this.currentQuery().name]: text });
   }
 
   formatContent() {
-    const address1 = 'address line 1';
-    const address2 = 'address line 2';
-    const address = this.content[address1].concat('\n', this.content[address2]);
-    delete this.content[address1];
-    delete this.content[address2];
-    this.content['address'] = address;
+    const addressLines = this.content.splice(-2, 2);
+    const address = addressLines.map(addressLine => Object.values(addressLine));
+    this.content.push({ ['address']: address.join('\n') });
   }
 }
 
