@@ -2,6 +2,8 @@
 
 const process = require('process');
 const fs = require('fs');
+const { Query } = require('./Query.js');
+const { Form } = require('./Form.js');
 
 const writeToFile = (data) => {
   fs.writeFileSync('./form.json', JSON.stringify(data), 'utf8');
@@ -9,37 +11,78 @@ const writeToFile = (data) => {
   process.exit(0);
 };
 
-const parseContent = (content, fileData, callBack) => {
-  if (Object.keys(fileData).length === 0) {
-    fileData['Name'] = content;
-    console.log('Please enter your DOB : [yyyy-mm-dd]');
-    return;
-  }
-
-  if (Object.keys(fileData).length === 1) {
-    fileData['DOB'] = content;
-    console.log('Please enter your hobbies :');
-    return;
-  }
-
-  const hobbies = content.split(',');
-  fileData.Hobbies = hobbies;
-  callBack(fileData);
+const validateName = (text) => {
+  return text.length > 4 &&
+    text.split('').every(char => /[ a-zA-Z]+/.test(char.toLowerCase()));
 };
 
-const readFromStdin = (callBack) => {
+const parseName = (text) => {
+  return text;
+};
+
+const parseDob = (text) => {
+  return text.split('-');
+};
+
+const parseHobbies = (text) => {
+  return text.split(',');
+};
+
+const validateDob = (text) => {
+  const dob = text.split('-');
+  if (dob.length !== 3) {
+    return false;
+  }
+  const lengths = [4, 2, 2];
+  for (let index = 0; index < dob.length; index++) {
+    if (dob[index].length != lengths[index]) {
+      return false;
+    }
+  }
+  return dob.every(field => /^\d+$/.test(field));
+};
+
+const validateHobbies = (text) => {
+  const hobbies = text.split(',');
+  if (hobbies < 1) {
+    return false;
+  }
+  return true;
+};
+
+const parseContent = (content, form, fileData, callBack) => {
+  if (form.validate(content)) {
+    const parsedContent = form.parseContent(content);
+    fileData[form.currentQuery().name] = parsedContent;
+    form.nextQuery();
+  }
+
+  if (form.isFormFilled(fileData)) {
+    callBack(fileData);
+    process.exit(1);
+  }
+  form.showPrompt();
+};
+
+const readFromStdin = (form, callBack) => {
   const fileData = {};
+  form.showPrompt();
+
   process.stdin.setEncoding('utf8');
 
   process.stdin.on('data', (chunk) => {
     const content = chunk.split('\n');
-    parseContent(content[0], fileData, callBack);
+    parseContent(content[0], form, fileData, callBack);
   });
 };
 
 const main = () => {
-  console.log('Please enter your name : ');
-  readFromStdin(writeToFile);
+  const nameField = new Query('Name', validateName, parseName);
+  const dob = new Query('DOB', validateDob, parseDob);
+  const hobbies = new Query('Hobbies', validateHobbies, parseHobbies);
+
+  const form = new Form(nameField, dob, hobbies);
+  readFromStdin(form, writeToFile);
 };
 
 main();
