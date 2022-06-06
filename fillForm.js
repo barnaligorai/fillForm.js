@@ -1,5 +1,3 @@
-/* eslint-disable max-statements */
-
 const process = require('process');
 const fs = require('fs');
 const { Query } = require('./Query.js');
@@ -55,15 +53,17 @@ const parseContent = (content, form, fileData, callBack) => {
   if (form.isFormFilled()) {
     form.formatContent();
     callBack(form.content);
+    // eslint-disable-next-line no-process-exit
     process.exit(1);
   }
 
-  form.showPrompt();
+  process.stdout.write(form.queryName());
 };
 
 const readFromStdin = (form, callBack) => {
   const fileData = {};
-  form.showPrompt();
+
+  process.stdout.write(form.queryName());
 
   process.stdin.setEncoding('utf8');
 

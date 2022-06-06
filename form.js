@@ -21,8 +21,8 @@ class Form {
     return this.currentQuery().parse(text);
   }
 
-  showPrompt() {
-    console.log(`Please enter your ${this.currentQuery().name} :`);
+  queryName() {
+    return `Please enter your ${this.currentQuery().name} : `;
   }
 
   isFormFilled() {

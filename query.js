@@ -4,6 +4,7 @@ class Query {
     this.validation = validation;
     this.parse = parse;
   }
+
   isValid(text) {
     return this.validation(text);
   }
