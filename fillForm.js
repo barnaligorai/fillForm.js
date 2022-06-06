@@ -8,7 +8,6 @@ const { Form } = require('./Form.js');
 const writeToFile = (data) => {
   fs.writeFileSync('./form.json', JSON.stringify(data), 'utf8');
   console.log('Thank you.');
-  process.exit(0);
 };
 
 const validateName = (text) => {
@@ -16,17 +15,13 @@ const validateName = (text) => {
     text.split('').every(char => /[ a-zA-Z]+/.test(char.toLowerCase()));
 };
 
-const parseName = (text) => {
-  return text;
-};
+const validatePhNo = (text) => /^\d{10}$/.test(text);
 
-const parseDob = (text) => {
-  return text.split('-');
-};
+const identity = (text) => text;
 
-const parseHobbies = (text) => {
-  return text.split(',');
-};
+const parseDob = (text) => text.split('-');
+
+const parseHobbies = (text) => text.split(',');
 
 const validateDob = (text) => {
   const dob = text.split('-');
@@ -77,11 +72,12 @@ const readFromStdin = (form, callBack) => {
 };
 
 const main = () => {
-  const nameField = new Query('Name', validateName, parseName);
-  const dob = new Query('DOB', validateDob, parseDob);
-  const hobbies = new Query('Hobbies', validateHobbies, parseHobbies);
+  const nameField = new Query('name', validateName, identity);
+  const dob = new Query('dob', validateDob, parseDob);
+  const hobbies = new Query('hobbies', validateHobbies, parseHobbies);
+  const phNo = new Query('ph_no', validatePhNo, identity);
 
-  const form = new Form(nameField, dob, hobbies);
+  const form = new Form(nameField, dob, hobbies, phNo);
   readFromStdin(form, writeToFile);
 };
 
