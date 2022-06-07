@@ -33,10 +33,17 @@ class Form {
     this.content.push({ [this.currentQuery().name]: text });
   }
 
-  formatContent() {
+  formattedContent() {
     const addressLines = this.content.splice(-2, 2);
     const address = addressLines.map(addressLine => Object.values(addressLine));
     this.content.push({ ['address']: address.join('\n') });
+
+    const formattedContent = {};
+    this.content.forEach(field => {
+      const [[name, content]] = Object.entries(field);
+      formattedContent[name] = content;
+    });
+    return formattedContent;
   }
 }
 
