@@ -1,26 +1,28 @@
 class Field {
   #name;
-  #validate;
+  #prompt;
+  #validator;
   #parser;
   #response;
 
-  constructor(name, validate, parser) {
+  constructor(name, prompt, validator, parser) {
     this.#name = name;
-    this.#validate = validate;
+    this.#prompt = prompt;
+    this.#validator = validator;
     this.#parser = parser;
     this.#response = null;
   }
 
   prompt() {
-    return this.#name;
+    return this.#prompt;
   }
 
   isValid(text) {
-    return this.#validate(text);
+    return this.#validator(text);
   }
 
   parse() {
-    return this.#parser(this.response);
+    return this.#parser(this.#response);
   }
 
   fill(response) {

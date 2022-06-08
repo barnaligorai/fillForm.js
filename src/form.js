@@ -16,7 +16,7 @@ class Form {
   }
 
   showPrompt() {
-    return `Please enter your ${this.#currentField().prompt()} : `;
+    return this.#currentField().prompt();
   }
 
   isFilled() {

@@ -6,6 +6,3 @@ Barnali
 drawing,coding
 1
 1234567890
-
-dgr
-kol

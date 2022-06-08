@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const fs = require('fs');
 const { Field } = require('./src/field.js');
 const { Form } = require('./src/Form.js');
@@ -38,10 +39,10 @@ const registerResponse = (response, form, callBack) => {
 };
 
 const createForm = () => {
-  const nameField = new Field('name', validateName, identity);
-  const dobField = new Field('dob', validateDob, identity);
-  const hobbiesField = new Field('hobbies', notEmpty, splitOnComma);
-  const phNoField = new Field('ph_no', validatePhNo, identity);
+  const nameField = new Field('name', 'Please enter your name', validateName, identity);
+  const dobField = new Field('dob', 'Please enter your dob', validateDob, identity);
+  const hobbiesField = new Field('hobbies', 'Please enter your hobbies', notEmpty, splitOnComma);
+  const phNoField = new Field('ph_no', 'Please enter your ph_no', validatePhNo, identity);
 
   return new Form(nameField, dobField, hobbiesField, phNoField);
 };
