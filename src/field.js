@@ -1,4 +1,4 @@
-class Query {
+class Field {
   constructor(name, validation, parse) {
     this.name = name;
     this.validation = validation;
@@ -10,4 +10,4 @@ class Query {
   }
 }
 
-exports.Query = Query;
+exports.Field = Field;
