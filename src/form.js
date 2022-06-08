@@ -15,7 +15,7 @@ class Form {
     this.#index++;
   }
 
-  showPrompt() {
+  getPrompt() {
     return this.#currentField().prompt();
   }
 

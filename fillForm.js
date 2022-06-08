@@ -27,7 +27,7 @@ const registerResponse = (response, form, callBack) => {
   }
 
   if (!form.isFilled()) {
-    console.log(form.showPrompt());
+    console.log(form.getPrompt());
     return;
   }
 
@@ -50,7 +50,7 @@ const createForm = () => {
 const main = () => {
   const form = createForm();
 
-  console.log(form.showPrompt());
+  console.log(form.getPrompt());
 
   process.stdin.setEncoding('utf8');
 
