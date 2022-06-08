@@ -1,49 +1,45 @@
 class Form {
-  constructor(...query) {
-    this.queries = query;
-    this.index = 0;
-    this.content = [];
+  #fields;
+  #index;
+
+  constructor(...fileds) {
+    this.#fields = fileds;
+    this.#index = 0;
   }
 
-  currentQuery() {
-    return this.queries[this.index];
+  #currentField() {
+    return this.#fields[this.#index];
   }
 
-  nextQuery() {
-    this.index++;
+  #nextField() {
+    this.#index++;
   }
 
-  validate(text) {
-    return this.currentQuery().isValid(text);
+  showPrompt() {
+    return `Please enter your ${this.#currentField().prompt()} : `;
   }
 
-  parseContent(text) {
-    return this.currentQuery().parse(text);
+  isFilled() {
+    return this.#fields.every(field => field.isFilled());
   }
 
-  queryName() {
-    return `Please enter your ${this.currentQuery().name} : `;
+  fillField(response) {
+    if (!this.#currentField().isValid(response)) {
+      throw new Error('Invalid response');
+    }
+
+    this.#currentField().fill(response);
+    this.#nextField();
   }
 
-  isFormFilled() {
-    return this.queries.length === Object.keys(this.content).length;
-  }
-
-  updateContent(text) {
-    this.content.push({ [this.currentQuery().name]: text });
-  }
-
-  formattedContent() {
-    const addressLines = this.content.splice(-2, 2);
-    const address = addressLines.map(addressLine => Object.values(addressLine));
-    this.content.push({ ['address']: address.join('\n') });
-
-    const formattedContent = {};
-    this.content.forEach(field => {
-      const [[name, content]] = Object.entries(field);
-      formattedContent[name] = content;
-    });
-    return formattedContent;
+  getResponses() {
+    const responses = {};
+    this.#fields.forEach(field => {
+      const [name, response] = field.getEntry();
+      responses[name] = response;
+    }
+    );
+    return responses;
   }
 }
 

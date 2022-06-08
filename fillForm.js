@@ -1,11 +1,9 @@
-const process = require('process');
 const fs = require('fs');
 const { Field } = require('./src/field.js');
 const { Form } = require('./src/Form.js');
 
-const writeToFile = (data) => {
-  fs.writeFileSync('./form.json', JSON.stringify(data), 'utf8');
-  console.log('Thank you.');
+const writeToFile = (filledForm) => {
+  fs.writeFileSync('./form.json', JSON.stringify(filledForm), 'utf8');
 };
 
 const validateName = (text) => /[a-zA-Z ]{5,}/.test(text.trim());
@@ -18,49 +16,48 @@ const notEmpty = (text) => text.length > 0;
 
 const identity = (text) => text;
 
-const splitONComma = (text) => text.split(',');
-const parseContent = (content, form, callBack) => {
-  if (form.validate(content)) {
-    const parsedContent = form.parseContent(content);
-    form.updateContent(parsedContent);
-    form.nextQuery();
+const splitOnComma = (text) => text.split(',');
+
+const registerResponse = (response, form, callBack) => {
+  try {
+    form.fillField(response);
+  } catch (error) {
+    console.log('Invalid response');
   }
 
-  if (form.isFormFilled()) {
-    callBack(form.formattedContent());
-    // eslint-disable-next-line no-process-exit
-    process.exit();
-
+  if (!form.isFilled()) {
+    console.log(form.showPrompt());
+    return;
   }
 
-  process.stdout.write(form.queryName());
-};
+  callBack(form.getResponses());
 
-const readFromStdin = (form, callBack) => {
-  process.stdout.write(form.queryName());
+  console.log('Thank you.');
 
-  process.stdin.setEncoding('utf8');
-
-  process.stdin.on('data', (chunk) => {
-    const lines = chunk.trim().split('\n');
-    // parseContent(lines[0], form, callBack);
-    lines.forEach(line => parseContent(line, form, callBack));
-  });
+  process.stdin.destroy();
 };
 
 const createForm = () => {
   const nameField = new Field('name', validateName, identity);
-  const dob = new Field('dob', validateDob, identity);
-  const hobbies = new Field('hobbies', notEmpty, splitONComma);
-  const phNo = new Field('ph_no', validatePhNo, identity);
-  const address1 = new Field('address line 1', notEmpty, identity);
-  const address2 = new Field('address line 2', notEmpty, identity);
-  return new Form(nameField, dob, hobbies, phNo, address1, address2);
+  const dobField = new Field('dob', validateDob, identity);
+  const hobbiesField = new Field('hobbies', notEmpty, splitOnComma);
+  const phNoField = new Field('ph_no', validatePhNo, identity);
+
+  return new Form(nameField, dobField, hobbiesField, phNoField);
 };
 
 const main = () => {
   const form = createForm();
-  readFromStdin(form, writeToFile);
+
+  console.log(form.showPrompt());
+
+  process.stdin.setEncoding('utf8');
+
+  process.stdin.on('data', (text) => {
+    const responses = text.trim().split('\n');
+    responses.forEach(response =>
+      registerResponse(response.trim(), form, writeToFile));
+  });
 };
 
 main();
