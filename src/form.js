@@ -29,7 +29,9 @@ class Form {
     }
 
     this.#currentField().fill(response);
-    this.#nextField();
+    if (this.#currentField().isFilled()) {
+      this.#nextField();
+    }
   }
 
   getResponses() {

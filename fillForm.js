@@ -4,6 +4,7 @@ const boxen = require('boxen');
 
 const fs = require('fs');
 const { Field } = require('./src/field.js');
+const { MultilineField } = require('./src/multilineField.js');
 const { Form } = require('./src/Form.js');
 
 const writeToFile = (filledForm) => {
@@ -50,7 +51,9 @@ const createForm = () => {
   const hobbiesField = new Field('hobbies', 'Please enter your hobbies', notEmpty, splitOnComma);
   const phNoField = new Field('ph_no', 'Please enter your ph_no', validatePhNo, identity);
 
-  return new Form(nameField, dobField, hobbiesField, phNoField);
+  const addressField = new MultilineField('address', ['Please enter address line 1', 'Please enter address line 2'], notEmpty, identity);
+
+  return new Form(nameField, dobField, hobbiesField, phNoField, addressField);
 };
 
 const main = () => {
@@ -63,7 +66,8 @@ const main = () => {
   process.stdin.on('data', (text) => {
     const responses = text.trim().split('\n');
     responses.forEach(response =>
-      registerResponse(response.trim(), form, writeToFile));
+      registerResponse(response.trim(), form, writeToFile)
+    );
   });
 };
 

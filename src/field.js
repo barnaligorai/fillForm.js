@@ -21,9 +21,9 @@ class Field {
     return this.#validator(text);
   }
 
-  parse() {
-    return this.#parser(this.#response);
-  }
+  // parse() {
+  //   return this.#parser(this.#response);
+  // }
 
   fill(response) {
     this.#response = response;
