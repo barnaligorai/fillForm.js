@@ -1,4 +1,7 @@
 /* eslint-disable max-len */
+const chalk = require('chalk');
+const boxen = require('boxen');
+
 const fs = require('fs');
 const { Field } = require('./src/field.js');
 const { Form } = require('./src/Form.js');
@@ -23,17 +26,20 @@ const registerResponse = (response, form, callBack) => {
   try {
     form.fillField(response);
   } catch (error) {
-    console.log('Invalid response');
+    console.log(chalk.redBright('Invalid response'));
   }
 
   if (!form.isFilled()) {
-    console.log(form.getPrompt());
+    console.log(chalk.yellowBright(form.getPrompt()));
     return;
   }
 
   callBack(form.getResponses());
 
-  console.log('Thank you.');
+  console.log(boxen(
+    chalk.greenBright('Thank you.'),
+    { margin: { top: 1, left: 20 }, borderStyle: 'double' })
+  );
 
   process.stdin.destroy();
 };
@@ -50,7 +56,7 @@ const createForm = () => {
 const main = () => {
   const form = createForm();
 
-  console.log(form.getPrompt());
+  console.log(chalk.yellowBright(form.getPrompt()));
 
   process.stdin.setEncoding('utf8');
 

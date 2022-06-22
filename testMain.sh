@@ -1,3 +1,5 @@
+#! /bin/bash
+
 function testFillForm(){
   echo > form.json
   
